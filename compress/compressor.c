@@ -11,7 +11,7 @@ void output(CompressedData c) {
 	FILE *output;
 	output = fopen("./compress/output.txt", "w");
 	for (int i = 0; i < c.n; i++) {
-		printf("%c", c.data[i]);
+		fprintf(output, "%c", c.data[i]);
 	}
 	fclose(output);
 }
