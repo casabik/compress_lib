@@ -6,7 +6,7 @@ typedef struct Vector {
     int capacity;
 } Vector;
 
-extern void init(Vector *vector);
+extern void v_init(Vector *vector);
 extern void v_push_back(Vector *vector, int elem);
 extern void v_insert(Vector *vector, int elem, int pos);
 extern void v_erase(Vector *vector, int pos);

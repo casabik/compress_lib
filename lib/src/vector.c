@@ -4,7 +4,7 @@
 
 
 void
-init (Vector *vector) {
+v_init (Vector *vector) {
 	int* arr;
 	int size = 0;
 	vector->size = size;

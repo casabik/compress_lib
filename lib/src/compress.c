@@ -5,16 +5,19 @@
 
 #define BLOCK_SIZE 32
 #define MODE_BITS 4
+#define CHAR_LIMIT 8
 
-int check_number_length(int number) {
-    int length = 0;
-    unsigned int num = number;
-    while (num > 0) {
-        length++;
-        num >>= 1;
+
+int countBits(unsigned int number) {
+    int count = 0;
+    while (number) {
+        count++;
+        number >>= 1; 
     }
-    return length;
+    return count;
 }
+
+
 int find_mode_by_length(int length) {
     int mode;
     if (length <= 1) {
@@ -102,12 +105,12 @@ CompressedData compress(CompressType mode, int n, int *data) {
 	compressed.mode = mode;
 	compressed.n = n;
 	compressed.data = data;
-	int *list;
-	list = calloc(2 * (compressed.n), sizeof(*list));
-	if (list == NULL) {
-	        exit(1);
-        }
 	if (compressed.mode == COMPRESS_TYPE_RLE) {
+		int *list;
+		list = calloc(2 * (compressed.n), sizeof(*list));
+		if (list == NULL) {
+	        exit(1);
+		}
 		int count_temp = 1;
 		int temp = 0;
 		for (int i = 1; i < compressed.n; i++) {
@@ -129,6 +132,12 @@ CompressedData compress(CompressType mode, int n, int *data) {
 		compressed.n = temp;
 	} else if(compressed.mode == COMPRESS_TYPE_FIBONACCI) {
 		int fibonacci[12] = {233, 144, 89, 55, 34, 21, 13, 8, 5, 3, 2, 1};
+		int *list;
+		int cur_bit = 0;
+		list = calloc(1000, sizeof(*list));
+		if (list == NULL) {
+	        exit(1);
+		}
 		for (int i = 0; i < n; ++i) {
 			int number = (compressed.data)[i];
 			int index = 0;
@@ -138,21 +147,31 @@ CompressedData compress(CompressType mode, int n, int *data) {
 					index++;
 				}
 				int temp = 1;
-				for (int i = 0; i < (11 - index); i++) {
+				for (int j = 0; j < (11 - index); j++) {
 					temp *= 10;
 				}
 				result += temp;
 				number -= fibonacci[index];
 				index++;
 			}
+			 /*
+			int bits_result = countBits(result) + 1;
+			int bits_have = CHAR_LIMIT - countBits(list[cur_bit]);
+			if (bits_result <= bits_have) {
+				list[cur_bit] = (list[cur_bit] << bits_result) | ((result << 1) | 1);
+			}  else {
+				cur_bit++;
+				list[cur_bit] = ((result << (CHAR_LIMIT - bits_result)) | 1);
+			}*/
 			list[i] = result;
 		}
 		compressed.data = list;
+		compressed.n = cur_bit;
 	} else if (compressed.mode == COMPRESS_TYPE_SIMPLE9) {
 		int *temp_list = calloc(compressed.n, sizeof(*temp_list));
         int *list = calloc(compressed.n, sizeof(*list));
-		int currentNumber = 0; // Текущее число для кодировки
-		int temp = 0; // временная переменная типка i
+		int currentNumber = 0; 
+		int temp = 0;
 		int block = 0;
 		unsigned int mode = 0;
 		int point = 0;
@@ -160,7 +179,7 @@ CompressedData compress(CompressType mode, int n, int *data) {
 		int flag_check = 0;
 		while (point < compressed.n) {
 			int number = compressed.data[point];
-			int length = check_number_length(number);
+			int length = countBits(number);
 			unsigned int new_mode = find_mode_by_length(length);
 			if (new_mode > mode) {
 				if ((temp + 1) * modes_list[new_mode] >= BLOCK_SIZE  - MODE_BITS) {
