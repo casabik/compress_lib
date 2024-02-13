@@ -7,7 +7,6 @@ typedef struct List {
     struct List *next;
 } List;
 
-
 typedef struct L2Node {
     int data;
     struct L2Node *prev;
@@ -37,5 +36,6 @@ extern void l2_update(L2 *list, int elem, int pos);
 extern int l2_get(L2 *list, int pos);
 extern L2Node *l2_find(L2 *list, int elem);
 extern void l2_printf(L2*list);
+
 
 #endif
