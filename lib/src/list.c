@@ -142,15 +142,6 @@ l_count(List *list, int elem) {
         new_list = new_list->next;
     }
 }
-/*
-void 
-l_free(List *list) {
-    List *current = list;
-    while (current != NULL) {
-        free(current);
-        current = current->next;
-    }
-}*/
 
 void
 l2_push_back(L2 *list, int elem) {
@@ -200,28 +191,185 @@ l2_push_front(L2 *list, int elem) {
     }
 }
 
+
 void
 l2_insert(L2 *list, int elem, int pos) {
-    if (list == NULL) {
-        fprintf(stderr, "l2_insert: list is NULL");
+    if (list == NULL || pos < 0 || pos >= list->size) {
+        fprintf(stderr, "l2_insert: invalid parameters\n");
         fflush(stderr);
         exit(1);
     }
-    if (list->size == 0) {
-        list->head = calloc(1, sizeof(*list->head));
-        list->head->data = elem;
-        list->tail->prev = NULL; 
-        list->head->next = NULL;
-        list->tail = list->head;
-        list->size++;
+    if (list->size - pos >= pos) {
+        L2Node *new_l = calloc(1, sizeof(L2Node)); 
+        L2Node *l = list->head;
+        if (pos == 0) {
+            new_l->data = elem;
+            new_l->next = l;
+            new_l->prev = NULL;
+            l->prev = new_l;
+            list->head = new_l;
+        } else {
+            for(int i = 0; i < pos; i++) {
+                if (l == NULL) {
+                    exit(1);
+                }
+                l = l->next;
+            }
+            new_l->data = elem;
+            new_l->next = l;
+            new_l->prev = l->prev;
+            l->prev = new_l;
+            l->prev->prev->next = new_l;
+        }
     } else {
-        list->head->prev = calloc(1, sizeof(*list->head));
-        list->head->prev->data = elem;
-        list->head->prev->prev = NULL;
-        list->head->prev->prev = list->head;
-        list->head = list->head->prev;
-        list->size++;
+        L2Node *new_l = calloc(1, sizeof(L2Node)); 
+        L2Node *l = list->tail;
+        for(int i = list->size - 1; i > pos; i--) {
+            if (l == NULL) {
+                exit(1);
+            }
+            l = l->prev;
+        }
+        new_l->data = elem;
+        new_l->next = l;
+        new_l->prev = l->prev;
+        l->prev = new_l;
+        l->prev->prev->next = new_l;
     }
+    list->size++;
+}
+
+
+
+void 
+l2_update(L2 *list, int elem, int pos) {
+    if (list == NULL || pos < 0 || pos >= list->size) {
+        fprintf(stderr, "l2_update: invalid parameters\n");
+        fflush(stderr);
+        exit(1);
+    }
+    if (list->size - pos >= pos) {
+        L2Node *l = list->head;
+        for(int i = 0; i < pos; i++) {
+            if (l == NULL) {
+                exit(1);
+            }
+            l = l->next;
+        }
+        l->data = elem;
+    } else {
+        L2Node *l = list->tail;
+        for(int i = list->size - 1; i > pos; i--) {
+            if (l == NULL) {
+                exit(1);
+            }
+            l = l->prev;
+        }
+        l->data = elem;
+    }
+}
+
+int
+l2_get(L2 *list, int pos) {
+	if (pos < 0 || pos >= list->size || list == NULL) {
+        fprintf(stderr, "l2_get: invalid parameters\n");
+        fflush(stderr);
+        exit(1);
+    }
+    if (list->size - pos >= pos) {
+        L2Node *new_list = list->head;
+        for(int i = 0; i < pos; i++) {
+            if (new_list == NULL) {
+                exit(1);
+            }
+            new_list = new_list->next;
+        }
+        return new_list->data;
+    } else {
+        L2Node *new_list = list->tail;
+        for(int i = list->size - 1; i > pos; i--) {
+            if (new_list == NULL) {
+                exit(1);
+            }
+            new_list = new_list->prev;
+        }
+        return new_list->data;
+    }
+}
+
+L2Node 
+*l2_find(L2 *list, int elem) {
+	if (list == NULL) {
+        fprintf(stderr, "l2_get: invalid parameters\n");
+        fflush(stderr);
+        exit(1);
+    }
+    L2Node *new_list = list->head;
+    while (1) {
+        if (new_list == NULL) {
+            fprintf(stderr, "l2_get: invalid parameters\n");
+            fflush(stderr);
+            exit(1);
+        }
+        if (new_list->data == elem) {
+            return new_list;
+        }
+        new_list = new_list->next;
+    }
+}
+
+void 
+l2_erase(L2 *list, int pos) {
+    if (pos < 0 || pos >= list->size || list == NULL) {
+        fprintf(stderr, "l2_get: invalid parameters\n");
+        fflush(stderr);
+        exit(1);
+    }
+    if (list->size - pos >= pos) {
+        L2Node *l = list->head;
+        if (pos == 0) {
+            list->head = l->next;
+            list->head->prev = NULL;
+        } else {
+            for(int i = 0; i < pos; i++) {
+                if (l == NULL) {
+                    exit(1);
+                }
+                l = l->next;
+            }
+            l->prev->next = l->next;
+            l->next->prev = l->prev;
+        }
+    } else {
+        L2Node *l = list->tail;
+        if (pos == list->size - 1) {
+            list->tail = l->prev;
+            list->tail->next = NULL;
+        } else {
+            for(int i = list->size - 1; i > pos; i--) {
+                if (l == NULL) {
+                    exit(1);
+                }
+                l = l->prev;
+            }
+            l->prev->next = l->next;
+            l->next->prev = l->prev;
+        }
+    }
+    list->size--;
+}
+
+void
+l2_free(L2 *list) {
+    L2Node *l = list->head;
+    while (l != NULL) {
+        L2Node *tmp = l;
+        l = l->next;
+        free(tmp);
+    }
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
 }
 
 void
@@ -237,4 +385,3 @@ l2_printf(L2 *list) {
     }
     printf("\n");
 }
-

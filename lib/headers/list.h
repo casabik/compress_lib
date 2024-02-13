@@ -36,6 +36,6 @@ extern void l2_update(L2 *list, int elem, int pos);
 extern int l2_get(L2 *list, int pos);
 extern L2Node *l2_find(L2 *list, int elem);
 extern void l2_printf(L2*list);
-
+extern void l2_free(L2*list);
 
 #endif
