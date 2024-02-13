@@ -21,13 +21,13 @@ main(void) {
 	FILE *input;
 	input = fopen("./compress/input.txt", "r");
 	Vector vector;
-	init(&vector);
+	v_init(&vector);
 	int cur;
 	while((cur = getc(input)) != EOF) {
 		v_push_back(&vector, (int)cur);
 	}
-	CompressedData compressed = simp_compress(vector.size, vector.data);
-	CompressedData compressed_output = simp_decompress(compressed.n, compressed.data);
+	CompressedData compressed = fib_compress(vector.size, vector.data);
+	CompressedData compressed_output = fib_decompress(compressed.n, compressed.data);
 	v_free(&vector);
 	if (compressed_output.data == NULL) {
 		printf("error");
