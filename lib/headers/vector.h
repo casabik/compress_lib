@@ -1,5 +1,6 @@
 #ifndef VECTOR_H
 #define VECTOR_H
+
 typedef struct Vector {
     int *data;
     int size;
@@ -13,5 +14,6 @@ extern void v_erase(Vector *vector, int pos);
 extern void v_update(Vector *vector, int elem, int pos);
 extern int v_get(Vector *vector, int pos);
 extern void v_free(Vector *vector);
+extern void v_printf(Vector *vector);
 
 #endif

@@ -379,9 +379,9 @@ l2_printf(L2 *list) {
         fflush(stderr);
         exit(1);
     }
-    while(list->head != NULL) {
-        printf("%d\n", list->head->data);
-        list->head = list->head->next;
+    L2Node *l = list->head;
+    while(l != NULL) {
+        printf("%d\n", l->data);
+        l = l->next;
     }
-    printf("\n");
 }

@@ -1,6 +1,7 @@
-#include <stdlib.h>
 #ifndef LIST_H
 #define LIST_H
+
+#include <stdlib.h>
 
 typedef struct List {
     int data;
@@ -14,8 +15,8 @@ typedef struct L2Node {
 } L2Node;
  
 typedef struct L2 {
-    struct L2Node *head;
-    struct L2Node *tail;
+    L2Node *head;
+    L2Node *tail;
     size_t size;
 } L2;
 
