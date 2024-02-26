@@ -3,86 +3,120 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void 
-h_insert(Heap *heap, int elem) {
-    if (heap->root == NULL) {
-        heap->root = calloc(1, sizeof(heap->root));
-        heap->root->data = elem;
-        heap->root->left = NULL;
-        heap->root->right = NULL;
-        heap->root->parent = NULL; 
-    } else {
-        TreeNode *node = heap->root;
-        TreeNode *new_node = calloc(1, sizeof(*new_node));
-        new_node->data = elem;
-        new_node->parent = NULL;
-        new_node->left = NULL;
-        new_node->right = NULL;
-        while (1) {
-            if (elem < node->data) {
-                if (node->left == NULL) {
-                    node->left = new_node;
-                    new_node->parent = node;
-                    break;
-                }
-                node = node->left;
-            } else {
-                if (node->right == NULL) {
-                    node->right = new_node;
-                    new_node->parent = node;
-                    break;
-                }
-                node = node->right;
-            }
-        }
-    }
+
+void
+swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+TreeNode 
+*init_node(int value) {
+    TreeNode *newNode = calloc(1, sizeof(TreeNode));
+    newNode->data = value;
+    newNode->left = newNode->right = newNode->parent = NULL;
+    return newNode;
 }
 
 
 void
-swap(void *a, void *b) {
-    void *temp = a;
-    a = b;
-    b = temp;
-}
+h_insert(Heap *heap, int value) {
+    TreeNode *newNode = init_node(value);
 
-
-void 
-h_make(TreeNode *node) {
-    TreeNode *smallest = node;
-    TreeNode *left = node->left;
-    TreeNode *right = node->right;
-    if (left != NULL && left->data < smallest->data)
-        smallest = left;
-    if (right != NULL && right->data < smallest->data)
-        smallest = right;
-    if (smallest != node) {
-        swap(&(node->data), &(smallest->data));
-        h_make(smallest);
-    }
-}
-
-void 
-h_erase_root(Tree *tree) {
-    if (tree->root == NULL) {
+    if (heap->root == NULL) {
+        heap->root = newNode;
         return;
     }
-    TreeNode *last_node = tree->root;
-    while (last_node->left != NULL || last_node->right != NULL) {
-        if (last_node->right != NULL) {
-            last_node = last_node->right;
-        }
-        else {
-            last_node = last_node->left;
+
+    TreeNode *temp = heap->root;
+    while (temp->left != NULL && temp->right != NULL) {
+        if (temp->left != NULL && temp->right != NULL) {
+            if (temp->left->data < temp->right->data) {
+                temp = temp->left;
+            } else {
+                temp = temp->right;
+            }
+        } else {
+            if (temp->left != NULL) {
+                temp = temp->left;
+            } else {
+                temp = temp->right;
+            }
         }
     }
-    tree->root->data = last_node->data;
-    if (last_node->parent->left == last_node)
-        last_node->parent->left = NULL;
+
+    if (temp->left == NULL) {
+        temp->left = newNode;
+    } else {
+        temp->right = newNode;
+    }
+
+    newNode->parent = temp;
+
+    while (newNode->parent != NULL && newNode->parent->data < newNode->data) {
+        swap(&newNode->data, &newNode->parent->data);
+        newNode = newNode->parent;
+    }
+}
+
+
+int
+h_erase_root(Heap *heap) {
+    if (heap->root == NULL) {
+        fflush(stderr);
+        fprintf(stderr, "Heap is empty\n");
+        exit(1);
+    }
+
+    int rootValue = heap->root->data;
+
+    if (heap->root->left == NULL && heap->root->right == NULL) {
+        free(heap->root);
+        heap->root = NULL;
+        return rootValue;
+    }
+
+    TreeNode *lastNode = heap->root;
+    while (lastNode->left != NULL || lastNode->right != NULL) {
+        if (lastNode->right != NULL)
+            lastNode = lastNode->right;
+        else
+            lastNode = lastNode->left;
+    }
+
+    if (lastNode->parent->left == lastNode)
+        lastNode->parent->left = NULL;
     else
-        last_node->parent->right = NULL;
-    free(last_node);
-    h_make(tree->root);
+        lastNode->parent->right = NULL;
+
+    heap->root->data = lastNode->data;
+    free(lastNode);
+
+    TreeNode *current = heap->root;
+    while (current->left != NULL || current->right != NULL) {
+        TreeNode *leftChild = current->left;
+        TreeNode *rightChild = current->right;
+
+        TreeNode *maxChild = current;
+        if (leftChild != NULL && leftChild->data > maxChild->data) {
+            maxChild = leftChild;
+        }
+        if (rightChild != NULL && rightChild->data > maxChild->data) {
+            maxChild = rightChild;
+        }
+
+        if (maxChild == current) {
+            break;
+        }
+        int temp = current->data;
+        current->data = maxChild->data;
+        maxChild->data = temp;
+
+        current = maxChild;
+    }
+
+    return rootValue;
 }
 
 
