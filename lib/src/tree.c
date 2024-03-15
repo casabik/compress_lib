@@ -13,50 +13,50 @@ swap(int *a, int *b) {
 
 TreeNode 
 *init_node(int value) {
-    TreeNode *new_one = calloc(1, sizeof(TreeNode));
-    new_one->data = value;
-    new_one->left = new_one->right = new_one->parent = NULL;
-    return new_one;
+    TreeNode *newNode = calloc(1, sizeof(TreeNode));
+    newNode->data = value;
+    newNode->left = newNode->right = newNode->parent = NULL;
+    return newNode;
 }
 
 
 void
 h_insert(Heap *heap, int value) {
-    TreeNode *new_one = init_node(value);
+    TreeNode *newNode = init_node(value);
 
     if (heap->root == NULL) {
-        heap->root = new_one;
+        heap->root = newNode;
         return;
     }
 
-    TreeNode *node = heap->root;
-    while (node->left != NULL && node->right != NULL) {
-        if (node->left != NULL && node->right != NULL) {
-            if (node->left->data < node->right->data) {
-                node = node->left;
+    TreeNode *temp = heap->root;
+    while (temp->left != NULL && temp->right != NULL) {
+        if (temp->left != NULL && temp->right != NULL) {
+            if (temp->left->data < temp->right->data) {
+                temp = temp->left;
             } else {
-                node = node->right;
+                temp = temp->right;
             }
         } else {
-            if (node->left != NULL) {
-                node = node->left;
+            if (temp->left != NULL) {
+                temp = temp->left;
             } else {
-                node = node->right;
+                temp = temp->right;
             }
         }
     }
 
-    if (node->left == NULL) {
-        node->left = new_one;
+    if (temp->left == NULL) {
+        temp->left = newNode;
     } else {
-        node->right = new_one;
+        temp->right = newNode;
     }
 
-    new_one->parent = node;
+    newNode->parent = temp;
 
-    while (new_one->parent != NULL && new_one->parent->data < new_one->data) {
-        swap(&new_one->data, &new_one->parent->data);
-        new_one = new_one->parent;
+    while (newNode->parent != NULL && newNode->parent->data < newNode->data) {
+        swap(&newNode->data, &newNode->parent->data);
+        newNode = newNode->parent;
     }
 }
 
@@ -77,47 +77,47 @@ h_erase_root(Heap *heap) {
         return rootValue;
     }
 
-    TreeNode *last_one = heap->root;
-    while (last_one->left != NULL || last_one->right != NULL) {
-        if (last_one->right != NULL)
-            last_one = last_one->right;
+    TreeNode *lastNode = heap->root;
+    while (lastNode->left != NULL || lastNode->right != NULL) {
+        if (lastNode->right != NULL)
+            lastNode = lastNode->right;
         else
-            last_one = last_one->left;
+            lastNode = lastNode->left;
     }
 
-    if (last_one->parent->left == last_one)
-        last_one->parent->left = NULL;
+    if (lastNode->parent->left == lastNode)
+        lastNode->parent->left = NULL;
     else
-        last_one->parent->right = NULL;
+        lastNode->parent->right = NULL;
 
-    heap->root->data = last_one->data;
-    free(last_one);
+    heap->root->data = lastNode->data;
+    free(lastNode);
 
     TreeNode *current = heap->root;
     while (current->left != NULL || current->right != NULL) {
-        TreeNode *max_node = current;
-        TreeNode *left_child = current->left;
-        TreeNode *left_child = current->right;
-        if (left_child != NULL && left_child->data > max_node->data) {
-            max_node = left_child;
+        TreeNode *leftChild = current->left;
+        TreeNode *rightChild = current->right;
+
+        TreeNode *maxChild = current;
+        if (leftChild != NULL && leftChild->data > maxChild->data) {
+            maxChild = leftChild;
         }
-        if (left_child != NULL && left_child->data > max_node->data) {
-            max_node = left_child;
+        if (rightChild != NULL && rightChild->data > maxChild->data) {
+            maxChild = rightChild;
         }
 
-        if (max_node == current) {
+        if (maxChild == current) {
             break;
         }
         int temp = current->data;
-        current->data = max_node->data;
-        max_node->data = temp;
+        current->data = maxChild->data;
+        maxChild->data = temp;
 
-        current = max_node;
+        current = maxChild;
     }
 
     return rootValue;
 }
-
 
 void
 bst_insert(BSTree *tree, int elem) {

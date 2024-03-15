@@ -19,9 +19,8 @@ typedef Tree Heap;
 typedef Tree BSTree;
 
 extern void h_insert(Heap *heap, int elem);
-extern void h_erase_root(Heap *heap);
-extern void swap(int *a, int *b);
 extern TreeNode *init_node(int value);
+extern int h_erase_root(Heap *heap);
 extern void bst_insert(BSTree *tree, int elem);
 extern void bst_erase(BSTree *tree, int elem);
 extern int bst_find(BSTree *tree, int elem);
