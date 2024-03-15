@@ -32,12 +32,14 @@ $(DIR_SRC)/list.o: $(DIR_SRC)/list.c $(DIR_HEAD)/list.h
 $(DIR_SRC)/que.o: $(DIR_SRC)/que.c $(DIR_HEAD)/que.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-
 $(DIR_SRC)/tree.o: $(DIR_SRC)/tree.c $(DIR_HEAD)/tree.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(DIR_SRC)/avl.o: $(DIR_SRC)/avl.c $(DIR_HEAD)/avl.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(DIR_BIN)/libcompress.so: $(DIR_SRC)/compress.o $(DIR_SRC)/vector.o $(DIR_SRC)/list.o $(DIR_SRC)/que.o $(DIR_SRC)/tree.o 
+
+$(DIR_BIN)/libcompress.so: $(DIR_SRC)/compress.o $(DIR_SRC)/vector.o $(DIR_SRC)/list.o $(DIR_SRC)/que.o $(DIR_SRC)/tree.o $(DIR_SRC)/avl.o 
 	$(CC) $(CFLAGS) -shared -o $@ $^
 
 clean:
@@ -46,6 +48,7 @@ clean:
 	rm $(DIR_SRC)/vector.o
 	rm $(DIR_SRC)/que.o
 	rm $(DIR_SRC)/tree.o
+	rm $(DIR_SRC)/avl.o
 	rm $(DIR_SRC)/list.o
 	rm $(DIR_SRC)/try.o
 	rm $(DIR_BIN)/libcompress.so
