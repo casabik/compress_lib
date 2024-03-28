@@ -21,7 +21,7 @@ TreeNode
 
 
 void
-h_insert(Heap *heap, int value) {
+heap_insert(Heap *heap, int value) {
     TreeNode *newNode = init_node(value);
 
     if (heap->root == NULL) {
@@ -62,7 +62,7 @@ h_insert(Heap *heap, int value) {
 
 
 int
-h_erase_root(Heap *heap) {
+heap_erase_root(Heap *heap) {
     if (heap->root == NULL) {
         fflush(stderr);
         fprintf(stderr, "Heap is empty\n");

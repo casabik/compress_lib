@@ -1,6 +1,7 @@
 #include "../headers/list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 List *
@@ -57,7 +58,8 @@ l_insert(List *list, int elem, int pos) {
     return new_list;
 }
 
-List *l_erase(List *list, int pos) {
+List *
+l_erase(List *list, int pos) {
     List *first = list;
     int count = 0;
     if (pos == 0) {
@@ -140,6 +142,86 @@ l_count(List *list, int elem) {
             count++;
         }
         new_list = new_list->next;
+    }
+}
+
+Listr *
+lstr_printf(Listr *list) {
+    Listr *new_list = list;
+    while(new_list != NULL) {
+        printf("%s\n", new_list->data);
+        new_list = new_list->next;
+    }
+    return list;
+}
+
+
+Listr *
+lstr_push_back(Listr *list, char *elem) {
+    if(list == NULL) {
+        list = calloc(1, sizeof(*list));
+        list->next = NULL;
+        list->data = elem;
+        return list;
+    } else {
+        Listr *res = list;
+        while (list -> next != NULL) {
+            list = list->next;
+        }
+        list->next = calloc(1, sizeof(*list));
+        list->next->next = NULL;
+        list->next->data = elem;
+        return res;
+    }
+}
+
+
+Listr *
+lstr_erase(Listr *list, char* value) {
+    Listr *current = list, *prev = NULL;
+    while (current != NULL && strcmp(current->data, value) != 0) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (current == NULL) 
+        return list;
+
+    if (prev == NULL) {
+        Listr *temp = list;
+        list = list->next;
+        free(temp->data);
+        free(temp);
+    } else {
+        prev->next = current->next;
+        free(current->data);
+        free(current);
+    }
+
+    return list;
+}
+
+
+char *
+lstr_find(Listr *list, char *elem) {
+    Listr *current = list;
+    while (current != NULL) {
+        if (strcmp(current->data, elem) == 0) {
+            return current->data;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+void 
+lstr_free(Listr *list) {
+    Listr *temp;
+    while (list != NULL) {
+        temp = list;
+        list = list->next; 
+        free(temp->data);
+        free(temp);
     }
 }
 
