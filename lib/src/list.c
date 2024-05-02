@@ -72,6 +72,7 @@ l_erase(List *list, int pos) {
             list->next = NULL;
             return first;
         }
+        free(list->next);
     }
     list->next = list->next->next;
     return first;
