@@ -19,7 +19,7 @@ v_push_back(Vector *vector, int elem) {
 		vector->size++;
 		vector->data[vector->size - 1] = elem;
 	} else {
-		int *new_data = realloc(vector->data, 2 * vector->capacity * sizeof(int));
+		int *new_data = realloc(vector->data, 2 * vector->capacity);
 		if (new_data == NULL) {
 			exit(1);
 		}
